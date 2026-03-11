@@ -1,14 +1,23 @@
 import polars as pl
 import re
+import nltk
+from nltk.corpus import stopwords
+
+nltk.download('stopwords', quiet=True)
 
 def limpar_texto_peticao(df: pl.DataFrame, coluna_origem: str = "inteiro_teor", coluna_destino: str = "texto_limpo") -> pl.DataFrame:
-    """Limpa ruídos, formatações e caracteres especiais do texto jurídico."""
+    """Limpa ruídos, formatações, caracteres especiais e STOPWORDS do texto jurídico."""
+    
+    stop_words_pt = stopwords.words('portuguese')
+    padrao_stopwords = r'\b(' + '|'.join(stop_words_pt) + r')\b'
+    
     return df.with_columns(
         pl.col(coluna_origem)
         .str.to_lowercase()
         .str.replace_all(r">>>>>inicio<<<<<", " ")
         .str.replace_all(r"[\n\r\t]", " ")
         .str.replace_all(r"[^a-záéíóúâêôãõç\s]", " ")
+        .str.replace_all(padrao_stopwords, " ")
         .str.replace_all(r"\s+", " ")
         .str.strip_chars()
         .alias(coluna_destino)
