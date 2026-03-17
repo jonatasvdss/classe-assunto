@@ -42,10 +42,22 @@ def unificar_classes_frequentes(df: pl.DataFrame, coluna_alvo: str = "classe") -
         ).alias(coluna_alvo)
     )
 
-def preparar_dados_limpos(caminho_csv: str) -> pl.DataFrame:
-    """Orquestra a leitura e o pré-processamento completo."""
-    df = pl.read_csv(caminho_csv, separator='#')
+def preparar_dados_limpos(caminho_csv: str, tipo_alvo: str = "classe") -> pl.DataFrame:
+    df = pl.read_csv(caminho_csv, separator="#")
+    
+    if tipo_alvo == "classe":
+        if "classe" in df.columns:
+            df = unificar_classes_frequentes(df)
+    elif tipo_alvo == "assunto":
+        pass
+        
     df = limpar_texto_peticao(df)
-    df = unificar_classes_frequentes(df)
-    # Remove textos que ficaram vazios após a limpeza
-    return df.filter(pl.col("texto_limpo") != "")
+    
+    coluna_alvo = "classe" if tipo_alvo == "classe" else "assunto"
+    
+    df = df.filter(
+        pl.col(coluna_alvo).is_not_null() & 
+        (pl.col("texto_limpo").str.len_chars() > 0)
+    )
+    
+    return df

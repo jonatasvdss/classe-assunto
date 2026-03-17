@@ -22,10 +22,9 @@ def extrair_features_e_dividir(df: pl.DataFrame, coluna_texto: str = "texto_limp
     
     return X_treino, X_teste, y_treino, y_teste, vetorizador
 
-def salvar_modelo_e_vetorizador(modelo, vetorizador, nome_modelo: str):
+def salvar_modelo_e_vetorizador(modelo, vetorizador, nome_modelo: str, nome_vetorizador: str = "vetorizador_tfidf"):
     caminho_pasta = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'models'))
     os.makedirs(caminho_pasta, exist_ok=True)
     
     joblib.dump(modelo, os.path.join(caminho_pasta, f'{nome_modelo}.joblib'))
-    joblib.dump(vetorizador, os.path.join(caminho_pasta, 'vetorizador_tfidf.joblib'))
-    print(f"Modelo {nome_modelo} e Vetorizador salvos com sucesso na pasta 'models/'.")
+    joblib.dump(vetorizador, os.path.join(caminho_pasta, f'{nome_vetorizador}.joblib'))
