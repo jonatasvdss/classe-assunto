@@ -28,3 +28,16 @@ def salvar_modelo_e_vetorizador(modelo, vetorizador, nome_modelo: str, nome_veto
     
     joblib.dump(modelo, os.path.join(caminho_pasta, f'{nome_modelo}.joblib'))
     joblib.dump(vetorizador, os.path.join(caminho_pasta, f'{nome_vetorizador}.joblib'))
+
+def transformar_dados_teste(df: pl.DataFrame, caminho_vetorizador: str, coluna_texto: str = "texto_limpo", coluna_alvo: str = "classe"):
+    X = df[coluna_texto].to_list()
+    y = df[coluna_alvo].to_list()
+
+    _, X_teste_texto, _, y_teste = train_test_split(
+        X, y, test_size=0.2, random_state=42, stratify=y
+    )
+
+    vetorizador = joblib.load(caminho_vetorizador)
+    X_teste_vetorizado = vetorizador.transform(X_teste_texto)
+
+    return X_teste_vetorizado, y_teste
