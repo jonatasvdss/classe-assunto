@@ -28,7 +28,7 @@ def unificar_classes_frequentes(df, coluna_alvo="classe"):
     return df
 
 def preparar_dados_limpos(caminho_csv, tipo_alvo="classe", versao="v1_original"):
-    df = pl.read_csv(caminho_csv, separator="#")
+    df = pl.read_csv(caminho_csv, separator="#", infer_schema_length=0)
 
     colunas_esperadas = ["inteiro_teor", "fato", "tese", "pedido"]
     for col in colunas_esperadas:
@@ -41,7 +41,7 @@ def preparar_dados_limpos(caminho_csv, tipo_alvo="classe", versao="v1_original")
         if tipo_alvo == "classe":
             df = df.with_columns(
                 pl.struct(colunas_esperadas).map_elements(
-                    lambda row: row["inteiro_teor"].replace(row["fato"], "").replace(row["tese"], "").replace(row["pedido"], ""),
+                    lambda row: str(row["inteiro_teor"]).replace(str(row["fato"]), "").replace(str(row["tese"]), "").replace(str(row["pedido"]), ""),
                     return_dtype=pl.String
                 ).alias("texto_bruto")
             )
@@ -61,7 +61,14 @@ def preparar_dados_limpos(caminho_csv, tipo_alvo="classe", versao="v1_original")
     if tipo_alvo == "classe":
         df = unificar_classes_frequentes(df)
 
-    df = df.filter(pl.col("texto_limpo").str.len_chars() > 0)
+    df = df.filter(
+        pl.col("texto_limpo").is_not_null(),
+        pl.col("texto_limpo").str.len_chars() > 0,
+        pl.col(tipo_alvo).is_not_null(),
+        pl.col(tipo_alvo).str.to_lowercase() != "nulo",
+        pl.col(tipo_alvo).str.strip_chars() != ""
+    )
+    
     df = df.select(["texto_limpo", tipo_alvo])
     
     return df
