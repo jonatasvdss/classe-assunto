@@ -96,11 +96,11 @@ def main():
     versoes = ["v1_original", "v2_ftp"]
     
     for versao in versoes:
-        caminho_classes = os.path.join(caminho_base, 'data', versao, 'processed', 'classes_recorrentes.csv')
+        caminho_classes = os.path.join(caminho_base, 'data', versao, 'processed', 'classes_recorrentes_processado.csv')
         if os.path.exists(caminho_classes):
             treinar_pipeline(caminho_classes, "classe", versao)
             
-        caminho_assuntos = os.path.join(caminho_base, 'data', versao, 'processed', 'assuntos_recorrentes.csv')
+        caminho_assuntos = os.path.join(caminho_base, 'data', versao, 'processed', 'assuntos_recorrentes_processado.csv')
         if os.path.exists(caminho_assuntos):
             treinar_pipeline(caminho_assuntos, "assunto", versao)
 
