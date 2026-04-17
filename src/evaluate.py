@@ -2,7 +2,7 @@ import os
 from sklearn.metrics import classification_report, ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
 
-def avaliar_modelo(modelo, X_teste, y_teste, nome_modelo="Modelo"):
+def avaliar_modelo(modelo, X_teste, y_teste, nome_modelo="Modelo", versao="v1_original"):
     y_pred = modelo.predict(X_teste)
     
     print("\n" + "="*60)
@@ -18,7 +18,7 @@ def avaliar_modelo(modelo, X_teste, y_teste, nome_modelo="Modelo"):
     
     plt.title(f"Matriz de Confusão - {nome_modelo}", fontsize=14, pad=20)
     
-    caminho_pasta = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'imgs'))
+    caminho_pasta = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'imgs', versao))
     os.makedirs(caminho_pasta, exist_ok=True)
     
     nome_arquivo = f"matriz_confusao_{nome_modelo.lower().replace(' ', '_')}.png"
